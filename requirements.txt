@@ -1,0 +1,9 @@
+# Python 3 runtime dependency for timesync_e2e scripts.
+# Only scripts 07_deploy_slaves.py and 08_verify_all.py require paramiko.
+paramiko>=2.0
+
+# Install with pip:
+#   python3 -m pip install --user -r requirements.txt
+#
+# Or on Ubuntu/Debian:
+#   sudo apt install -y python3-paramiko
