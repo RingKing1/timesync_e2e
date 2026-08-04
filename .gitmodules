@@ -1,0 +1,6 @@
+[submodule "sensor_configure/camera_ros2"]
+	path = sensor_configure/camera_ros2
+	url = git@github.com:RingKing1/camera_ros2.git
+[submodule "sensor_configure/hesai_ws"]
+	path = sensor_configure/hesai_ws
+	url = git@github.com:RingKing1/hesai_ws.git
