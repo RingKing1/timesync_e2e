@@ -22,17 +22,17 @@ case "$MODE" in
     ;;
 esac
 
-export ROS_LOCALHOST_ONLY=1
+unset ROS_LOCALHOST_ONLY
 source /opt/ros/foxy/setup.bash
 source /mnt/ufs_data/workspace/sensor_configure/camera_ros2/install/setup.bash
 
 pkill -9 -f 'pony_camera_nod[e]' 2>/dev/null
 sleep 1
 
-nohup ros2 launch pony_camera pony_camera.launch.py \
+setsid ros2 launch pony_camera pony_camera.launch.py \
   camera_config_file:="$CAMERA_CONFIG_DIR/camera.config" \
   nvmedia_camera_config_file:="$CAMERA_CONFIG_DIR/nvmedia_camera.config" \
-  enable_undistortion:=false >/tmp/camera_driver_${MODE}.log 2>&1 &
+  enable_undistortion:=false < /dev/null >/tmp/camera_driver_${MODE}.log 2>&1 &
 
 sleep 10
 echo "--- camera topics ($MODE) ---"

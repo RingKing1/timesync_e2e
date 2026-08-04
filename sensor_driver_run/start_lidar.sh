@@ -2,14 +2,14 @@
 # Start Hesai lidar ROS2 driver.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-export ROS_LOCALHOST_ONLY=1
+unset ROS_LOCALHOST_ONLY
 source /opt/ros/foxy/setup.bash
 source /mnt/ufs_data/workspace/sensor_configure/hesai_ws/install/setup.bash
 
 pkill -9 -f 'hesai_ros_driver_nod[e]' 2>/dev/null
 sleep 1
 
-nohup ros2 launch hesai_ros_driver start.py >/tmp/lidar_driver.log 2>&1 &
+setsid ros2 launch hesai_ros_driver start.py < /dev/null >/tmp/lidar_driver.log 2>&1 &
 
 sleep 10
 echo '--- lidar topics ---'

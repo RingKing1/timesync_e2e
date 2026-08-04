@@ -4,7 +4,7 @@
 #   bash record_sensors.sh six [duration]
 #   bash record_sensors.sh one [duration]
 
-export ROS_LOCALHOST_ONLY=1
+unset ROS_LOCALHOST_ONLY
 source /opt/ros/foxy/setup.bash
 source /mnt/ufs_data/workspace/sensor_configure/hesai_ws/install/setup.bash
 source /mnt/ufs_data/workspace/sensor_configure/camera_ros2/install/setup.bash
