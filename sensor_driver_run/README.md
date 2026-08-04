@@ -95,6 +95,10 @@ bash start_camera.sh six
 /camera/cam_3/CameraDeviceGroupB_0/jpeg
 /camera/cam_4/CameraDeviceGroupB_1/jpeg
 /camera/cam_5/CameraDeviceGroupB_2/jpeg
+/localization/kinematicstate
+/beidou/navsatfix
+/beidou/inspva
+/beidou/corrimudata
 ```
 
 ## 从 PC 一键执行
@@ -147,6 +151,10 @@ six 模式：
 /camera/cam_3/CameraDeviceGroupB_0/jpeg
 /camera/cam_4/CameraDeviceGroupB_1/jpeg
 /camera/cam_5/CameraDeviceGroupB_2/jpeg
+/localization/kinematicstate
+/beidou/navsatfix
+/beidou/inspva
+/beidou/corrimudata
 ```
 
 ## 录制
@@ -171,11 +179,24 @@ python3 run_sensors.py record one 30
 python3 run_sensors.py record six 30
 ```
 
-不带时间则一直录制：
+不带时间则后台一直录制：
 
 ```bash
 python3 run_sensors.py record six
 ```
+
+停止录制并下载 bag：
+
+```bash
+python3 run_sensors.py stop
+```
+
+`stop` 会依次：
+
+1. 停止正在后台录制的 rosbag
+2. 下载 bag 到 `timesync_e2e/rosbag_storage/`
+3. 删除 OrinA 上对应的源 bag
+4. 停止相机和雷达驱动
 
 如果直接在 OrinA 上运行 `record_sensors.sh`，bag 会保留在远程 `rosbag_storage`，不会自动回传或删除。
 

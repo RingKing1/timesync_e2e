@@ -96,6 +96,30 @@ def upload_scripts(client, force=False):
         sftp.close()
 
 
+def active_record_bag(client):
+    rc, out, _ = run(client, "cat /tmp/rosbag_record_bag.txt 2>/dev/null", timeout=15)
+    if rc == 0:
+        value = out.strip()
+        if value:
+            return value
+    return None
+
+
+def stop_active_record(client):
+    bag_path = active_record_bag(client)
+    if bag_path:
+        print("stopping active recording")
+        run(client, "PID=$(cat /tmp/rosbag_record.pid 2>/dev/null); if [ -n \"$PID\" ]; then kill -INT \"$PID\"; fi", timeout=30)
+        run(client, "sleep 4", timeout=30)
+        try:
+            download_and_remove_remote_bag(client, bag_path)
+        except Exception as exc:
+            print("download failed, remote bag kept:", exc)
+            return 1
+        run(client, "rm -f /tmp/rosbag_record.pid /tmp/rosbag_record_bag.txt", timeout=15)
+    return 0
+
+
 def remote_command(script, args=()):
     parts = ["bash", script] + list(args)
     return "cd %s && %s" % (REMOTE_DIR, " ".join(parts))
@@ -156,6 +180,9 @@ def main():
         elif args.command == "camera":
             cmd = remote_command("start_camera.sh", [args.mode])
         elif args.command == "stop":
+            rc = stop_active_record(client)
+            if rc != 0:
+                return rc
             cmd = remote_command("stop_sensors.sh")
         elif args.command == "record":
             cmd = remote_command("record_sensors.sh", [args.mode, str(args.duration)])
@@ -168,7 +195,7 @@ def main():
             print("--- stderr tail ---")
             print(err_text[-2000:])
 
-        if args.command == "record" and rc == 0:
+        if args.command == "record" and rc == 0 and args.duration > 0:
             match = re.search(r"BAG_PATH=(\S+)", out_text)
             if match:
                 remote_bag = match.group(1)
@@ -177,6 +204,8 @@ def main():
                 except Exception as exc:
                     print("download failed, remote bag kept:", exc)
                     return 1
+        elif args.command == "record" and rc == 0 and args.duration == 0:
+            print("recording is running in background; use stop to stop and download")
         return rc
     finally:
         client.close()
